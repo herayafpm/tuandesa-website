@@ -13,7 +13,7 @@ class ZakatController extends Controller
     public function index()
     {
         $now = date('Y-m-d');
-        $zakats = Zakat::where('start', '<=', $now)->where('end','>=',$now)->latest()->offset($request->start??0)->limit($request->limit??10)->get();
+        $zakats = Zakat::where('start', '<=', $now)->where('end','>=',$now)->latest()->get();
         return response()->json([
             'status'=>true,
             'messages'=>"Berhasil mengambil data",
@@ -25,14 +25,25 @@ class ZakatController extends Controller
     {
         $jumlahdusun = (int) env('COUNT_DUSUN');
         $zakatamil = ZakatAmil::where('user_id',auth()->user()->id)->where('zakat_id',$id)->get()->first();
-        return response()->json([
-            'status'=>true,
+        if($zakatamil){
+            return response()->json([
+                'status'=>true,
+                'messages'=>"Berhasil mengambil data",
+                'data'=> [
+                    'dusun'=> $jumlahdusun,
+                    'data' => $zakatamil
+                ]
+            ], 200);
+        }else{
+            return response()->json([
+            'status'=>false,
             'messages'=>"Berhasil mengambil data",
             'data'=> [
                 'dusun'=> $jumlahdusun,
-                'data' => $zakatamil
+                'data' => []
             ]
         ], 200);
+        }
     }
     public function store(Request $request,$id)
     {

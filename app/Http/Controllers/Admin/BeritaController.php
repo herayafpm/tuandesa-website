@@ -41,7 +41,7 @@ class BeritaController extends Controller
             }else if(Str::is($request->search, "proses")){
               $request->search = array_search('Proses', Aduan::statuses());
             }
-            $searchFields = ['id','created_at','status','user.name','jenisaduan.name'];
+            $searchFields = ['id','created_at','status','user.name','jenisberita.name'];
             $beritas->whereLike($searchFields, $request->search);
         }
         $beritas = $beritas->paginate(10);
@@ -73,7 +73,7 @@ class BeritaController extends Controller
             if($request->has('image')){
                 $dataInsert = [];
                 foreach ($request['image'] as $image) {
-                    $name = auth()->user()->username.'_'.$berita->jenisberita->name.'_'.time();
+                    $name = auth()->user()->username.'_'.Str::random(10).'_'.$berita->jenisberita->name.'_'.time();
                     ImageStorage::upload($image,$name);
                     array_push($dataInsert,[
                         'berita_id' => $berita->id,
@@ -144,8 +144,9 @@ class BeritaController extends Controller
     {
         $berita = Berita::findOrFail($id);
         $berita->berita_images->each(function($image){
-            if(File::exists($image->path)){
-                File::delete($image->path);
+            $imagePath = substr($image->path,8);
+            if($image->delete()){
+                ImageStorage::delete($imagePath);
             }
         });
         if($berita->delete()){
@@ -167,7 +168,7 @@ class BeritaController extends Controller
         if($request->has('image')){
             $dataInsert = [];
             foreach ($request['image'] as $image) {
-                $name = auth()->user()->username.'_'.$berita->jenisberita->name.'_'.time();
+                $name = auth()->user()->username.'_'.Str::random(10).'_'.$berita->jenisberita->name.'_'.time();
                 ImageStorage::upload($image,$name);
                 array_push($dataInsert,[
                     'berita_id' => $berita->id,

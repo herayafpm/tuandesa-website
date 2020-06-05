@@ -81,6 +81,7 @@
               <div class="card p-2">
                 <div class="card-header">
                   <h4>Pembagian Zakat</h4>
+                  <p>Total Beras: {{round($beras,2)}} / Total uang: {{Currency::idr($uang)}}</p>
                   <div>
                     {!! Form::open(['url' => 'admin/zakats/'.$zakat->id.'/pembagian/reset','class'=> 'delete']) !!}
                     {!! Form::hidden('_method', 'DELETE') !!}
@@ -103,11 +104,11 @@
                       </tr>
                     </thead>
                     <tbody>
-                      @forelse ($zakat->pembagians as $zakatpembagian)
+                      @forelse ($pembagians as $zakatpembagian)
                         <tr>
                           <td>{{$zakatpembagian->id}}</td>
                           <td>{{$zakatpembagian->user->name}}</td>
-                          <td>{{$zakatpembagian->beras}} Kg</td>
+                          <td>{{round($zakatpembagian->beras,2)}} Kg</td>
                           <td>Rp. {{Currency::idr($zakatpembagian->uang)}}</td>
                           <td>{{$zakatpembagian->tipe}}</td>
                           <td>{{$zakatpembagian->created_at}}</td>
@@ -121,6 +122,9 @@
                   </table>
                   
                 </div>
+              </div>
+              <div class="card-footer">
+                {{$pembagians->links()}}
               </div>
               <!-- /.card-body -->
             </div>

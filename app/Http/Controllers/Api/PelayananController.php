@@ -10,6 +10,7 @@ use Validator;
 use Illuminate\Support\Facades\Auth;
 use ImageStorage;
 use App\Models\PelayananImage;
+use Str;
 class PelayananController extends Controller
 {
     public function index(Request $request)
@@ -60,7 +61,7 @@ class PelayananController extends Controller
                 $dataInsert = [];
                 foreach ($request->lampiran as $image) {
                     $image = base64_decode(explode(';',explode(',',$image)[1])[0]);
-                    $name = $pelayanan->user->name.'_'.$pelayanan->jenispelayanan->name.'_'.time();
+                    $name = $pelayanan->user->name.'_'.Str::random(10).'_'.$pelayanan->jenispelayanan->name.'_'.time();
                     ImageStorage::upload($image,$name);
                     array_push($dataInsert,[
                         'pelayanan_id' => $pelayanan->id,

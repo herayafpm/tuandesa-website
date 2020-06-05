@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Bantuan;
+use App\Models\BantuanImage;
+use ImageStorage;
 use Str;
 class BantuanController extends Controller
 {
@@ -58,6 +60,19 @@ class BantuanController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $bantuan = Bantuan::findOrFail($id);
+        $bantuan->bantuan_images->each(function($image){
+            BantuanImage::findOrFail($image->id);
+            $imagePath = substr($image->path,8);
+            if($image->delete()){
+                ImageStorage::delete($imagePath);
+            }
+        });
+        if($bantuan->delete()){
+            flash('Bantuan berhasil dihapus')->success();
+        }else{
+            flash('Bantuan gagal dihapus')->error()->important();
+        }
+        return redirect()->route('bantuans.index');
     }
 }

@@ -12,6 +12,7 @@ use ImageStorage;
 use App\Models\AduanImage;
 use App\Models\AduanLike;
 use App\Models\AduanComment;
+use Str;
 class AduanController extends Controller
 {
     public function index(Request $request)
@@ -59,7 +60,7 @@ class AduanController extends Controller
                 $dataInsert = [];
                 foreach ($request->lampiran as $image) {
                     $image = base64_decode(explode(';',explode(',',$image)[1])[0]);
-                    $name = $aduan->user->name.'_'.$aduan->jenisaduan->name.'_'.time();
+                    $name = $aduan->user->name.'_'.Str::random(10).'_'.$aduan->jenisaduan->name.'_'.time();
                     ImageStorage::upload($image,$name);
                     array_push($dataInsert,[
                         'aduan_id' => $aduan->id,
@@ -101,6 +102,28 @@ class AduanController extends Controller
             'messages'=>"Berhasil mengambil data",
             'data'=> $aduan
         ], 200);
+    }
+    public function destroy($id){
+        $aduan = Aduan::findOrFail($id);
+        $aduan->aduan_images->each(function($image){
+            $imagePath = substr($image->path,8);
+            if($image->delete()){
+                ImageStorage::delete($imagePath);
+            }
+        });
+        if($aduan->delete()){
+           return response()->json([
+                'status'=>true,
+                'messages'=>"Berhasil menghapus aduan",
+                'data'=> []
+            ], 200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'messages'=>"Berhasil menghapus aduan",
+                'data'=> []
+            ], 400);
+        }
     }
     public function likeAduan($id)
     {
@@ -153,6 +176,15 @@ class AduanController extends Controller
                 'data'=> null
             ], 400);
         }
+    }
+    public function aduanComments(Request $request,$id)
+    {
+        $comments = AduanComment::with('user')->where('aduan_id',$id)->latest()->offset($request->start??0)->limit($request->limit??10)->get();
+        return response()->json([
+            'status'=>true,
+            'messages'=>"Berhasil mengambil data",
+            'data'=> $comments
+        ], 200);
     }
 
     public function komentarDelete($id)

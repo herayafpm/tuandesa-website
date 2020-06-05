@@ -43,7 +43,7 @@
                       {!! Form::open(['url' => route('users.index'), 'method' => 'GET']) !!}
                         <div class="row">
                           <div class="col">
-                            {!! Form::select('orderBy',  ['id' => 'id','created_at' => 'Dibuat','status' => 'Status'],app('request')->input('orderBy'),['placeholder' => '--Pilih Order By--','class' => 'form-control']) !!}
+                            {!! Form::select('orderBy',  ['id' => 'id','created_at' => 'Dibuat','name' => 'Nama'],app('request')->input('orderBy'),['placeholder' => '--Pilih Order By--','class' => 'form-control']) !!}
                           </div>
                           <div class="col">
                             {!! Form::select('order',  ['asc' => 'ASC','desc' => 'DESC'],app('request')->input('order'),['placeholder' => '--Pilih Order--','class' => 'form-control']) !!}

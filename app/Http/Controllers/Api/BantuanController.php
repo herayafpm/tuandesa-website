@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use ImageStorage;
 use App\Models\BantuanImage;
 use App\Models\BantuanJawaban;
+use Str;
 class BantuanController extends Controller
 {
     public function index(Request $request)
@@ -68,7 +69,7 @@ class BantuanController extends Controller
                 $dataInsert = [];
                 foreach ($request->lampiran as $image) {
                     $image = base64_decode(explode(';',explode(',',$image)[1])[0]);
-                    $name = $bantuan->user->name.'_'.$bantuan->jenisbantuan->name.'_'.time();
+                    $name = $bantuan->user->name.'_'.Str::random(10).'_'.$bantuan->jenisbantuan->name.'_'.time();
                     ImageStorage::upload($image,$name);
                     array_push($dataInsert,[
                         'bantuan_id' => $bantuan->id,

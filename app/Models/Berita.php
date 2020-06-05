@@ -31,6 +31,10 @@ class Berita extends Model
     {
         return $this->hasMany('App\Models\BeritaImage');
     }
+    public function likes()
+    {
+        return $this->hasMany('App\Models\BeritaLike');
+    }
     public function getStatus($stat)
     {
         $status = Berita::statuses()[$stat];

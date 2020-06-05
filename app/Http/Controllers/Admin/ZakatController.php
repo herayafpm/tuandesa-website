@@ -9,6 +9,7 @@ use App\Http\Requests\ZakatRequest;
 use App\Models\ZakatAmil;
 use App\Models\ZakatPembagian;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Currency;
 
 class ZakatController extends Controller
@@ -68,7 +69,15 @@ class ZakatController extends Controller
     public function show($id)
     {
         $zakat = Zakat::findOrFail($id);
-        return view('admin.zakats.show',compact('zakat'));
+        $pembagians = ZakatPembagian::with('user')->where('zakat_id',$zakat->id)->paginate(10);
+        
+        $beras = DB::table('zakat_pembagians')
+                ->where('zakat_id', '=', $zakat->id)
+                ->sum('beras');
+        $uang = DB::table('zakat_pembagians')
+                ->where('zakat_id', '=', $zakat->id)
+                ->sum('uang');
+        return view('admin.zakats.show',compact('zakat','pembagians','beras','uang'));
     }
 
     /**
@@ -141,8 +150,8 @@ class ZakatController extends Controller
     public function pembagian_create($id)
     {
         $zakat = Zakat::findOrFail($id);
-        $users = User::role('User')->get();
-        $amils = User::role('Amil')->get();
+        $users = User::role('User')->orderBy('name','ASC')->get();
+        $amils = User::role('Amil')->orderBy('name','ASC')->get();
         return view('admin.zakats.form_pembagian',compact('zakat','users','amils'));
     }
     public function pembagian_store(Request $request, $id)

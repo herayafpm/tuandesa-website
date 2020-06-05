@@ -9,13 +9,21 @@ class Currency{
   }
   public static function pembulatan($uang)
   {
+    $uang = ceil($uang);
     $ribuan = substr($uang, -4);
     if($ribuan < 5000){
-      $akhir = $uang - $ribuan;
+        $akhir= $uang - $ribuan;
     }else{
-      $akhir = $uang + (5000-$ribuan);
+        $akhir = $uang +(5000 - $ribuan);
     }
     return $akhir;
+    // $ribuan = substr($uang, -4);
+    // if($ribuan < 5000){
+    //   $akhir = $uang - $ribuan;
+    // }else{
+    //   $akhir = $uang + (5000-$ribuan);
+    // }
+    // return $akhir;
   }
   public static function pembulatanBeras($beras)
   {

@@ -23,7 +23,7 @@
       </div>
 
       <!-- Sidebar Menu -->
-      <nav class="mt-2">
+      <nav class="">
         <ul class="nav nav-pills nav-sidebar flex-column" id="sidebarApp" data-widget="treeview" role="menu" data-accordion="true">
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
@@ -218,7 +218,7 @@
             </li>
             @endcan
             @can('view_zakats')
-            <li class="nav-item has-treeview">
+            <li class="nav-item has-treeview mb-5">
               <a href="#" class="nav-link">
                 <i class="nav-icon fas  fa-circle"></i>
                 <p>
@@ -238,6 +238,7 @@
               </ul>
             </li>
             @endcan
+            
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

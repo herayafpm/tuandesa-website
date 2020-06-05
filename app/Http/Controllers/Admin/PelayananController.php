@@ -67,7 +67,7 @@ class PelayananController extends Controller
             if($request->has('image')){
                 $dataInsert = [];
                 foreach ($request['image'] as $image) {
-                    $name = $pelayanan->user->name.'_'.$pelayanan->jenispelayanan->name.'_'.time();
+                    $name = $pelayanan->user->name.'_'.Str::random(10).'_'.$pelayanan->jenispelayanan->name.'_'.time();
                     ImageStorage::upload($image,$name);
                     array_push($dataInsert,[
                         'pelayanan_id' => $pelayanan->id,
@@ -139,8 +139,9 @@ class PelayananController extends Controller
     {
         $pelayanan = Pelayanan::findOrFail($id);
         $pelayanan->pelayanan_images->each(function($image){
-            if(File::exists($image->path)){
-                File::delete($image->path);
+            $imagePath = substr($image->path,8);
+            if($image->delete()){
+                ImageStorage::delete($imagePath);
             }
         });
         if($pelayanan->delete()){
@@ -162,7 +163,7 @@ class PelayananController extends Controller
         if($request->has('image')){
             $dataInsert = [];
             foreach ($request['image'] as $image) {
-                $name = $pelayanan->user->name.'_'.$pelayanan->jenispelayanan->name.'_'.time();
+                $name = $pelayanan->user->name.'_'.Str::random(10).'_'.$pelayanan->jenispelayanan->name.'_'.time();
                 ImageStorage::upload($image,$name);
                 array_push($dataInsert,[
                     'pelayanan_id' => $pelayanan->id,

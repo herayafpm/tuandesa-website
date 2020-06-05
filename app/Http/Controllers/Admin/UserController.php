@@ -13,6 +13,7 @@ use Str;
 use ImageStorage;
 use Excel;
 use App\Imports\UserImport;
+use Storage;
 
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\ImportUserRequest;
@@ -36,7 +37,7 @@ class UserController extends Controller
         }
 
         if(!empty($request->search)){
-            $searchFields = ['id','name','alamat','ttl'];
+            $searchFields = ['name','username','address','ttl','email'];
             $users->whereLike($searchFields, $request->search);
         }
         $users = $users->paginate(10);
@@ -192,7 +193,7 @@ class UserController extends Controller
         $path = $request->file('file')->store('public');
         $fileName = substr($path,7);
         $import = new UserImport();
-        $import->import(public_path('/storage/'.$fileName));
+        $import->import(Storage::disk('public')->path($fileName));
         $errors = [];
         foreach ($import->failures() as $failure) {
             $row = $failure->row();

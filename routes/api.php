@@ -13,8 +13,11 @@ use Illuminate\Support\Facades\Auth;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::post('login', 'Api\UserController@login');
+Route::group(['namespace' => 'Api','prefix'=>'auth'], function(){
+    Route::post('login', 'UserController@login');
+    Route::post('lupa', 'UserController@lupa');
 
+});
 Route::group(['namespace' => 'Api','middleware' => 'auth:api','prefix'=>'profile'], function(){
     Route::get('/', 'UserController@profile');
     Route::put('/', 'UserController@update');
@@ -36,7 +39,10 @@ Route::group(['namespace' => 'Api','middleware' => 'auth:api','prefix'=>'aduan']
     Route::post('/', 'AduanController@store');
     Route::get('/jenis', 'AduanController@jenis');
     Route::get('/{aduanId}', 'AduanController@show');
+    Route::delete('/{aduanId}', 'AduanController@destroy');
     Route::post('/{aduanId}/like', 'AduanController@likeAduan');
+    Route::post('/{aduanId}/like', 'AduanController@likeAduan');
+    Route::get('/{aduanId}/comment', 'AduanController@aduanComments');
     Route::post('/{aduanId}/comment', 'AduanController@komentarAduan');
     Route::delete('/comment/{commentId}', 'AduanController@komentarDelete');
 });
@@ -61,6 +67,8 @@ Route::group(['namespace' => 'Api','middleware' => 'auth:api','prefix'=>'berita'
     Route::post('/', 'BeritaController@store');
     Route::get('/jenis', 'BeritaController@jenis');
     Route::get('/{BeritaId}', 'BeritaController@show');
+    Route::delete('/{beritaId}', 'BeritaController@destroy');
+    Route::post('/{beritaId}/like', 'BeritaController@like');
 });
 
 Route::group(['namespace' => 'Api','middleware' => 'auth:api','prefix'=>'zakat'], function(){
@@ -69,8 +77,12 @@ Route::group(['namespace' => 'Api','middleware' => 'auth:api','prefix'=>'zakat']
     Route::get('/{ZakatId}', 'ZakatController@show');
 });
 
-
-
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['namespace' => 'Api','middleware' => 'auth:api','prefix'=>'profiledesa'], function(){
+    Route::get('/', 'ProfileDesaController@index');
 });
+
+
+
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });

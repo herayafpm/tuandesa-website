@@ -10,6 +10,8 @@ use Validator;
 use Illuminate\Support\Facades\Auth;
 use ImageStorage;
 use App\Models\BeritaImage;
+use App\Models\BeritaLike;
+use Str;
 class BeritaController extends Controller
 {
     public function index(Request $request)
@@ -60,7 +62,7 @@ class BeritaController extends Controller
                 $dataInsert = [];
                 foreach ($request->lampiran as $image) {
                     $image = base64_decode(explode(';',explode(',',$image)[1])[0]);
-                    $name = $berita->user->name.'_'.$berita->jenisberita->name.'_'.time();
+                    $name = $berita->user->name.'_'.Str::random(10).'_'.$berita->jenisberita->name.'_'.time();
                     ImageStorage::upload($image,$name);
                     array_push($dataInsert,[
                         'berita_id' => $berita->id,
@@ -87,6 +89,13 @@ class BeritaController extends Controller
     {
         $berita = Berita::with('user','jenisberita','berita_images')->where('id',$id)->get()->each(function($array){
             $array->status = $array->getStatus($array->status);
+            $array->me = false;
+            foreach ($array->likes as $like) {
+                if($like['user_id'] == Auth::user()->id){
+                    $array->me = true;
+                }
+            }
+            $array->totalLike = $array->likes->count();
             return $array;
         });
         return response()->json([
@@ -94,6 +103,47 @@ class BeritaController extends Controller
             'messages'=>"Berhasil mengambil data",
             'data'=> $berita
         ], 200);
+    }
+    public function like($id){
+        $berita = Berita::findOrFail($id);
+        $user = Auth::user()->id;
+        $like = (bool) $berita->likes->where('user_id',$user)->count();
+        $params = [
+            'user_id' => $user,
+            'berita_id' => $id,
+        ];
+        if($like){
+            BeritaLike::where($params)->delete();
+        }else{
+            BeritaLike::create($params);
+        }
+        return response()->json([
+            'status'=>true,
+            'messages'=>"Berhasil ".((!$like)?"Menlike":"Mendislike")." Berita",
+            'data'=> null
+        ], 200);
+    }
+    public function destroy($id){
+        $berita = Berita::findOrFail($id);
+        $berita->berita_images->each(function($image){
+            $imagePath = substr($image->path,8);
+            if($image->delete()){
+                ImageStorage::delete($imagePath);
+            }
+        });
+        if($berita->delete()){
+           return response()->json([
+                'status'=>true,
+                'messages'=>"Berhasil menghapus berita",
+                'data'=> []
+            ], 200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'messages'=>"Berhasil menghapus berita",
+                'data'=> []
+            ], 400);
+        }
     }
     public function jenis()
     {

@@ -17,6 +17,7 @@ use Str;
 use ImageStorage;
 use App\Authorizable;
 
+
 class AduanController extends Controller
 {
     use Authorizable;
@@ -42,7 +43,7 @@ class AduanController extends Controller
             }else if(Str::is($request->search, "proses")){
               $request->search = array_search('Proses', Aduan::statuses());
             }
-            $searchFields = ['id','created_at','status','user.name','jenisaduan.name'];
+            $searchFields = ['status','user.name','jenisaduan.name','user.username'];
             $aduans->whereLike($searchFields, $request->search);
         }
         $aduans = $aduans->paginate(10);
@@ -75,7 +76,7 @@ class AduanController extends Controller
             if($request->has('image')){
                 $dataInsert = [];
                 foreach ($request['image'] as $image) {
-                    $name = $aduan->user->name.'_'.$aduan->jenisaduan->name.'_'.time();
+                    $name = $aduan->user->name.'_'.Str::random(10).'_'.$aduan->jenisaduan->name.'_'.time();
                     ImageStorage::upload($image,$name);
                     array_push($dataInsert,[
                         'aduan_id' => $aduan->id,
@@ -148,8 +149,9 @@ class AduanController extends Controller
     {
         $aduan = Aduan::findOrFail($id);
         $aduan->aduan_images->each(function($image){
-            if(File::exists($image->path)){
-                File::delete($image->path);
+            $imagePath = substr($image->path,8);
+            if($image->delete()){
+                ImageStorage::delete($imagePath);
             }
         });
         if($aduan->delete()){
@@ -171,7 +173,7 @@ class AduanController extends Controller
         if($request->has('image')){
             $dataInsert = [];
             foreach ($params['image'] as $image) {
-                $name = $aduan->user->name.'_'.$aduan->jenisaduan->name.'_'.time();
+                $name = $aduan->user->name.'_'.Str::random(10).'_'.$aduan->jenisaduan->name.'_'.time();
                 ImageStorage::upload($image,$name);
                 array_push($dataInsert,[
                     'aduan_id' => $aduan->id,

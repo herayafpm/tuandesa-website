@@ -86,7 +86,7 @@
                       @forelse ($aduans as $aduan)
                         <tr>
                           <td>{{$aduan->id}}</td>
-                          <td>{{$aduan->user->username}}</td>
+                          <td>{{$aduan->user->name}}</td>
                           <td>{{$aduan->jenisaduan->name}}</td>
                           <td>{{Str::limit($aduan->komentar,10)}}</td>
                           <td>{{$aduan->getStatus($aduan->status)}}</td>
