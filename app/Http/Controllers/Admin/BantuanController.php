@@ -28,15 +28,15 @@ class BantuanController extends Controller
         }
 
         if(!empty($request->search)){
-            $request->search = strtolower($request->search);
-            if(Str::is($request->search, "selesai")){
-              $request->search = array_search('Selesai', Bantuan::statuses());
-            }else if(Str::is($request->search, "tidak diterima")){
-              $request->search = array_search('Tidak Diterima', Bantuan::statuses());
-            }else if(Str::is($request->search, "diterima")){
-              $request->search = array_search('Diterima', Bantuan::statuses());
-            }
-            $searchFields = ['id','created_at','status','user.name','jenisbantuan.name'];
+            // $request->search = strtolower($request->search);
+            // if(Str::is($request->search, "selesai")){
+            //   $request->search = array_search('Selesai', Bantuan::statuses());
+            // }else if(Str::is($request->search, "tidak diterima")){
+            //   $request->search = array_search('Tidak Diterima', Bantuan::statuses());
+            // }else if(Str::is($request->search, "diterima")){
+            //   $request->search = array_search('Diterima', Bantuan::statuses());
+            // }
+            $searchFields = ['user.name','user.username'];
             $bantuans->whereLike($searchFields, $request->search);
         }
         $bantuans = $bantuans->paginate(10);
