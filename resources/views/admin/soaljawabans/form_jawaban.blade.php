@@ -41,7 +41,7 @@
                 {!! Form::label('nilai', 'Nilai') !!}
                 <select class="form-control" name="nilai" id="nilai">
                   <option value="">--Pilih Nilai--</option>
-                  @for ($i = 1; $i <= $jumlahnilai; $i++)
+                  @for ($i = 0; $i <= $jumlahnilai; $i++)
                     <option value="{{$i}}" @if(!empty($jawaban) &&$i == $jawaban->nilai) selected @endif>{{$i}}</option>
                   @endfor
                 </select>

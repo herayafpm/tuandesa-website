@@ -60,6 +60,7 @@ Route::group(['namespace' => 'Api','middleware' => 'auth:api','prefix'=>'bantuan
     Route::get('/jenis', 'BantuanController@jenis');
     Route::get('/{bantuanId}', 'BantuanController@show');
     Route::get('/soaljawaban/{jenisbantuanId}', 'BantuanController@soaljawaban');
+    Route::post('/pemeringkatan', 'BantuanController@pemeringkatan');
 });
 
 Route::group(['namespace' => 'Api','middleware' => 'auth:api','prefix'=>'berita'], function(){

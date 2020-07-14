@@ -26,6 +26,7 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
          Passport::routes();
+        //  Passport::personalAccessClientId('90f87289-2ee8-4761-bd32-a6a787917319');
         //
     }
 }

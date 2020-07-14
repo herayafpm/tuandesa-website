@@ -43,11 +43,12 @@ class UserController extends Controller
             ], 404);
         }
         $token = Str::random(60);
-        //Create Password Reset Token
+        DB::table('password_resets')->where('email', '=', $user->email)->delete();
+        // Create Password Reset Token
         DB::table('password_resets')->insert([
             'email' => $user->email,
-            'token' => $token,
-            'created_at' => \Carbon\Carbon::now()
+            'token' => Hash::make($token),
+            'created_at' => \Carbon\Carbon::now(),
         ]);
         $cek = $user->sendPasswordResetNotification($token);
         return response()->json([

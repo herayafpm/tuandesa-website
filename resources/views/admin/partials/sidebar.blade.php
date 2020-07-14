@@ -1,10 +1,10 @@
 <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="../../index3.html" class="brand-link">
-      <img src="{{URL::asset('vendor/adminlte/img/AdminLTELogo.png')}}"
+    <a href="{{url('admin')}}" class="brand-link">
+      <img src="{{URL::asset('img/logo.png')}}"
            alt="AdminLTE Logo"
-           class="brand-image img-circle elevation-3"
+           class="brand-image"
            style="opacity: .8">
      <span class="brand-text font-weight-light">{{config('app.name')}}</span>
     </a>
@@ -211,6 +211,20 @@
                       <a href="{{url('admin/soaljawabans')}}" class="nav-link {{(Request::segment(2) == 'soaljawabans')?'active':''}}">
                       <i class="far fa-circle nav-icon"></i>
                       <p>{{__('admin.soaljawabans')}}</p>
+                  </a>
+                </li>
+                @endcan
+                @can('view_bantuans')
+                <li class="nav-item">
+                      <a href="{{url('admin/bantuanpemeringkatans')}}" class="nav-link {{(Request::segment(2) == 'bantuanpemeringkatans')?'active':''}}">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Bantuan Pemeringkatan</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                      <a href="{{url('admin/bantuanlaporan')}}" class="nav-link {{(Request::segment(2) == 'bantuanlaporan')?'active':''}}">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Laporan Grafik</p>
                   </a>
                 </li>
                 @endcan

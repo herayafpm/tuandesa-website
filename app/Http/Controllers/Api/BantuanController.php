@@ -13,6 +13,8 @@ use ImageStorage;
 use App\Models\BantuanImage;
 use App\Models\BantuanJawaban;
 use Str;
+use SAW;
+use App\Models\Jawaban;
 class BantuanController extends Controller
 {
     public function index(Request $request)
@@ -89,6 +91,11 @@ class BantuanController extends Controller
                 ]);
                 $no++;
               }
+							$nilais = Jawaban::whereIn('id',$request->jawaban)->pluck('nilai')->toArray();
+							if(in_array(0,$nilais)){
+									$bantuan->status = 1;
+									$bantuan->save();
+							}
               BantuanJawaban::insert($dataInsert);
             }
             return response()->json([
@@ -137,6 +144,54 @@ class BantuanController extends Controller
             'status'=>true,
             'messages'=>"Berhasil mengambil data",
             'data'=> $soaljawabans
+        ], 200);
+    }
+    public function pemeringkatan(Request $request)
+    {
+        $data =  $request->data;
+        $soaljawabans = SoalJawaban::where('jenis_bantuan_id',2)->orderBy('id','desc')->get();
+        // $data_train = $request->data;
+        // $soaljawabans = [
+        //     [
+        //         'id' => 1,
+        //         'bobot' => 25,
+        //         'tipe' => 0,
+        //     ],
+        //     [
+        //         'id' => 2,
+        //         'bobot' => 20,
+        //         'tipe' => 1,
+        //     ],
+        //     [
+        //         'id' => 3,
+        //         'bobot' => 15,
+        //         'tipe' => 1,
+        //     ],
+        //     [
+        //         'id' => 4,
+        //         'bobot' => 10,
+        //         'tipe' => 1,
+        //     ],
+        //     [
+        //         'id' => 5,
+        //         'bobot' => 30,
+        //         'tipe' => 1,
+        //     ],
+        // ];
+        $data_train = [];
+        foreach ($data as $d) {
+            $nilais = Jawaban::whereIn('id',$d['jawaban'])->pluck('nilai')->toArray();
+            $jawabans = Jawaban::whereIn('id',$d['jawaban'])->pluck('jawaban')->toArray();
+            if(!in_array(0,$nilais)){
+                $d['hasil'] = $nilais;
+                array_push($data_train,$d);
+            }
+        }
+        $rekomendasi = SAW::getRecomendation($data_train,$soaljawabans);
+        return response()->json([
+            'status'=>true,
+            'messages'=>"Berhasil mengambil data",
+            'data'=> $rekomendasi
         ], 200);
     }
 }

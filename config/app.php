@@ -182,6 +182,7 @@ return [
         Collective\Html\HtmlServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
+        ConsoleTVs\Charts\ChartsServiceProvider::class,
 
     ],
 
@@ -243,7 +244,8 @@ return [
         'ImageStorage' => App\Helpers\ImageStorage::class,
         'SelectUser' => App\Helpers\SelectUser::class,
         'Currency' => App\Helpers\Currency::class,
-        
+        'SAW' => App\Helpers\SAW::class,
+        // 'PasswordToken' => Illuminate\Support\Facades\PasswordToken::class
 
     ],
 

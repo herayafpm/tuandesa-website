@@ -74,7 +74,11 @@ Route::group(['namespace' => 'Admin','prefix'=>'admin','middleware' => ['auth','
     // Route::get('laporanaduan','LaporanAduanController@index')->name('laporanaduan.index');
 
     // Bantuan
-    Route::resource('bantuans', 'BantuanController')->only('index','destroy','show');
+    Route::resource('bantuans', 'BantuanController')->only('index','destroy','show','update');
+    Route::get('bantuanlaporan', 'BantuanController@laporan')->name('bantuanlaporans');
+    Route::resource('bantuanpemeringkatans', 'BantuanPemeringkatanController');
+    Route::post('bantuanpemeringkatans/{bantuanpemeringkatanId}/peringkat','BantuanPemeringkatanController@peringkat');
+    Route::delete('bantuanpemeringkatans/{bantuanpemeringkatanId}/peringkat/reset','BantuanPemeringkatanController@peringkat_reset');
     // Route::get('laporanaduan','LaporanBantuanController@index')->name('laporanaduan.index');
 
     // Berita

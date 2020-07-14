@@ -16,8 +16,8 @@ class CreateZakatsTable extends Migration
         Schema::create('zakats', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
-            $table->timestamp('start');
-            $table->timestamp('end');
+            $table->timestamp('start',0);
+            $table->timestamp('end',0);
             $table->timestamps();
         });
     }
