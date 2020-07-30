@@ -6,10 +6,13 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Bantuan;
 use App\Models\BantuanImage;
+use App\Models\JenisBantuan;
 use ImageStorage;
 use Str;
 use App\Charts\BantuanChart;
 use Illuminate\Support\Facades\DB;
+use Excel;
+use App\Exports\BantuanExport;
 class BantuanController extends Controller
 {
     /**
@@ -96,53 +99,86 @@ class BantuanController extends Controller
         if($request->user()->can('view_bantuans') == false){
              return redirect()->route('admin');
         }
+        $jenis_bantuan = $request->input('jenis_bantuan_id');
+        $status = $request->input('status');
         $bulan = $request->input('bulan');
         $tahun = $request->input('tahun');
         $data = [];
         if(!empty($bulan) && empty($tahun)){
             $tahun = date('Y');
             for ($i=1; $i <= 31; $i++) {
+                $bantuan = (empty($jenis_bantuan))?Bantuan::with('jenisbantuan'):Bantuan::where('jenis_bantuan_id',$jenis_bantuan);
+                $bantuan = (empty($status))?$bantuan:$bantuan->where('status',$status);
                 $data['labels'][] = $i;
-                $data['dataset'][] = Bantuan::whereDate('created_at',"$tahun-$bulan-$i")->get()->count();
+                $data['dataset'][] = $bantuan->whereDate('created_at',"$tahun-$bulan-$i")->get()->count();
             }
         }else if(!empty($tahun) && empty($bulan)){
             for ($i=1; $i <= 12; $i++) { 
+                $bantuan = (empty($jenis_bantuan))?Bantuan::with('jenisbantuan'):Bantuan::where('jenis_bantuan_id',$jenis_bantuan);
+                $bantuan = (empty($status))?$bantuan:$bantuan->where('status',$status);
                 $data['labels'][] = $this->getMonth($i);
-                $data['dataset'][] = Bantuan::whereYear('created_at',$tahun)->whereMonth('created_at',$i)->get()->count();
+                $data['dataset'][] = $bantuan->whereYear('created_at',$tahun)->whereMonth('created_at',$i)->get()->count();
             }
         }else if(!empty($tahun) && !empty($bulan)){
             for ($i=1; $i <= 31; $i++) {
+                $bantuan = (empty($jenis_bantuan))?Bantuan::with('jenisbantuan'):Bantuan::where('jenis_bantuan_id',$jenis_bantuan);
+                $bantuan = (empty($status))?$bantuan:$bantuan->where('status',$status);
                 $data['labels'][] = $i;
-                $data['dataset'][] = Bantuan::whereDate('created_at',"$tahun-$bulan-$i")->get()->count();
+                $data['dataset'][] = $bantuan->whereDate('created_at',"$tahun-$bulan-$i")->get()->count();
             }
         }if(empty($tahun) && empty($bulan)){
             $bulan = date('m');
             $tahun = date('Y');
             for ($i=1; $i <= 31; $i++) {
+                $bantuan = (empty($jenis_bantuan))?Bantuan::with('jenisbantuan'):Bantuan::where('jenis_bantuan_id',$jenis_bantuan);
+                $bantuan = (empty($status))?$bantuan:$bantuan->where('status',$status);
                 $data['labels'][] = $i;
-                $data['dataset'][] = Bantuan::whereDate('created_at',"$tahun-$bulan-$i")->get()->count();
+                $data['dataset'][] = $bantuan->whereDate('created_at',"$tahun-$bulan-$i")->get()->count();
             }
         }
-        // var_dump($request->input());
-        // $user = $request->user();
-        // $bantuanChart = new BantuanChart;
-        // $bantuanChart->labels($data['labels']);
+        $statuses = Bantuan::statuses();
+        $jenis_bantuans = JenisBantuan::pluck('name','id');
+        $jenis_bantuan = (empty($jenis_bantuan)) ? 'Semua Jenis Bantuan': JenisBantuan::where('id',$jenis_bantuan)->pluck('name')->first();
+        $status = (empty($status)) ? 'Semua Status': 'Status '.$statuses[$status];
         if(!empty($bulan)){
-            $data['titleChart'] = "Grafik Bantuan Bulan ".$this->getMonth($bulan)." Tahun ".$tahun;
-            // $bantuanChart->dataset('Grafik Bantuan Bulan '.$this->getMonth($bulan).' Tahun '.$tahun, 'bar', $data['dataset'])->color("rgb(255, 99, 132)")->backgroundcolor("rgb(255, 99, 132)");
+            $data['titleChart'] = "Grafik Bantuan ".$jenis_bantuan." ".$status." Bulan ".$this->getMonth($bulan)." Tahun ".$tahun;
         }else{
-            $data['titleChart'] = "Grafik Bantuan Tahun ".$tahun;
-            // $bantuanChart->dataset('Grafik Bantuan Tahun '.$tahun, 'bar', $data['dataset'])->color("rgb(255, 99, 132)")->backgroundcolor("rgb(255, 99, 132)");
+            $data['titleChart'] = "Grafik Bantuan ".$jenis_bantuan." ".$status." Tahun ".$tahun;
         }
-        // $bantuanChart->options([
-        //         'backgroundColor' => 'green',
-        //         'displayLegend' => true,
-        //         'tooltip' => [
-        //             'show' => true
-        //         ]
-        //     ]);
-
-        return view('admin.bantuans.laporan', compact('data'));
+        return view('admin.bantuans.laporan', compact('data','statuses','jenis_bantuans'));
+    }
+    public function laporanexcel(Request $request)
+    {
+        $jenis_bantuan = $request->input('jenis_bantuan_id');
+        $status = $request->input('status');
+        $bulan = $request->input('bulan');
+        $tahun = $request->input('tahun');
+        $data = [];
+        if(empty($bulan) && empty($tahun)){
+            $bantuan = (empty($jenis_bantuan))?Bantuan::with('jenisbantuan','user'):Bantuan::where('jenis_bantuan_id',$jenis_bantuan);
+            $bantuan = (empty($status))?$bantuan:$bantuan->where('status',$status);
+            $data = $bantuan->get();
+        }else if(!empty($bulan) && !empty($tahun)){
+            $bantuan = (empty($jenis_bantuan))?Bantuan::with('jenisbantuan','user'):Bantuan::where('jenis_bantuan_id',$jenis_bantuan);
+            if(!is_null($status)){
+                $bantuan = $bantuan->where('status',$status);
+            }
+            $data = $bantuan->whereYear('created_at',$tahun)->whereMonth('created_at',$bulan)->get();
+        }
+        $statuses = Bantuan::statuses();
+        $bantuans = [["No", "Nama Lengkap", "Username","Jenis Bantuan","Status","Tanggal Diajukan"]];
+        $no = 1;
+        foreach ($data as $d) {
+            $bantuan = [$no,$d->user->name,$d->user->username,$d->jenisbantuan->name,$statuses[$d->status],$d->created_at];
+            array_push($bantuans,$bantuan);
+            $no++;
+        }
+        $jenis_bantuan = (empty($jenis_bantuan)) ? 'Semua Jenis Bantuan': JenisBantuan::where('id',$jenis_bantuan)->pluck('name')->first();
+        $status = (empty($status)) ? 'Semua Status': 'Status '.$statuses[$status];
+        $title = "Laporan Bantuan ".$jenis_bantuan." ".$status." ".((!empty($bulan) && !empty($tahun))?"Bulan ".$this->getMonth($bulan)." Tahun ".$tahun:"");
+        $export = new BantuanExport($bantuans);
+    
+        return Excel::download($export, "$title.csv");
     }
     private function getMonth($month)
     {

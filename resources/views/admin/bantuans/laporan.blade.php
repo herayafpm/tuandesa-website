@@ -20,20 +20,26 @@
             <div class="card-header">
               {!! Form::open(['url' => route('bantuanlaporans'), 'method' => 'GET']) !!}
               <div class="row">
-                <!-- <div class="col-2">
-                  {!! Form::select('tipe',  ['0' => 'Bulan','1' => 'Tahun'],app('request')->input('tipe'),['placeholder' => '--Pilih Tipe--','class' => 'form-control']) !!}
-                </div> -->
+                <div class="col-2">
+                  {!! Form::select('jenis_bantuan_id',  $jenis_bantuans,app('request')->input('jenis_bantuan_id'),['placeholder' => '--Pilih Jenis Bantuan--','class' => 'form-control']) !!}
+                </div>
+                <div class="col-2">
+                  {!! Form::select('status',  $statuses,app('request')->input('status'),['placeholder' => '--Pilih Status--','class' => 'form-control']) !!}
+                </div>
                 <div class="col-2">
                   <input name="bulan" type="text" id="datepicker1" class="form-control" value="{{app('request')->input('bulan')}}" placeholder="Pilih Bulan"/>
                 </div>
                 <div class="col-2">
                   <input name="tahun" type="text" id="datepicker2" class="form-control" value="{{app('request')->input('tahun')}}" placeholder="Pilih Tahun"/>
                 </div>
-                <div class="col">
+                <div class="col-1">
                   <button type="submit" class="btn btn-primary">Proses</button>
                 </div>
                 <div class="col">
                   <a name="" id="" class="btn btn-primary" href="#" role="button" onClick="printLaporan()">Print Grafik</a>
+                </div>
+                <div class="col">
+                  <a name="" id="" class="btn btn-success" target="_blank" href="{{url('admin/bantuanlaporanexcel')}}?jenis_bantuan_id={{app('request')->input('jenis_bantuan_id')}}&status={{app('request')->input('status')}}&bulan={{app('request')->input('bulan')}}&tahun={{app('request')->input('tahun')}}" role="button">Unduh Excel</a>
                 </div>
               </div>
               {!! Form::close() !!}

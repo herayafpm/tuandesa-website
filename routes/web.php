@@ -76,6 +76,7 @@ Route::group(['namespace' => 'Admin','prefix'=>'admin','middleware' => ['auth','
     // Bantuan
     Route::resource('bantuans', 'BantuanController')->only('index','destroy','show','update');
     Route::get('bantuanlaporan', 'BantuanController@laporan')->name('bantuanlaporans');
+    Route::get('bantuanlaporanexcel', 'BantuanController@laporanexcel')->name('bantuanlaporanexcels');
     Route::resource('bantuanpemeringkatans', 'BantuanPemeringkatanController');
     Route::post('bantuanpemeringkatans/{bantuanpemeringkatanId}/peringkat','BantuanPemeringkatanController@peringkat');
     Route::delete('bantuanpemeringkatans/{bantuanpemeringkatanId}/peringkat/reset','BantuanPemeringkatanController@peringkat_reset');
