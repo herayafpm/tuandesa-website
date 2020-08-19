@@ -16,6 +16,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return redirect('login');
 });
+Route::get('/manual', function(){
+    return Storage::disk('public')->download('manual_book_tuandesa.pdf');
+})->name('manual');
 
 Auth::routes(['register' => false,'verify' => true]);
 

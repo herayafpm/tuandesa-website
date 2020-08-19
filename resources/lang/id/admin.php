@@ -18,7 +18,7 @@ return [
   'datapelayanans' => 'Data Pelayanan',
   'jenispelayanans' => 'Jenis Pelayanan',
   'laporanpelayanan' => 'Laporan Pelayanan',
-  'bantuans' => 'Bantuan',
+  'bantuans' => 'Pengelolaan Bantuan',
   'databantuans' => 'Data Bantuan',
   'jenisbantuans' => 'Jenis Bantuan',
   'soaljawabans' => 'Soal & Jawaban',
